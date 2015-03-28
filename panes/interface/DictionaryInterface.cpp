@@ -336,11 +336,14 @@ void	DictionaryInterface::kanjiEnterButtonCallback(Ref* pSender)
 
 	// get the picture and analyze it
 	glAddition::captureRectToTGA(canvasBoundingBox, "to_analyze.tga");
-	glAddition::Pixel* pixels = glAddition::readPixels(canvasBoundingBox, "to_analyze.tga");
-	glAddition::ImageAnalyzer::analyzePixels(pixels);
-
-	// TODO
-
+	auto searchResult = AppDictionary::getInstance()->getKanjiByImage(canvasBoundingBox);
+	searchResult;
+	// WARNING!!! ONLY FOR TEACHING!!!
+	//
+	/*static long counter = 1;
+	glAddition::savePixels(canvasBoundingBox, std::to_string(counter) + ".bin");
+	counter++;*/
+	//
 	//
 }
 

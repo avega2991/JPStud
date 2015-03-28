@@ -69,7 +69,7 @@ void	glAddition::captureRectToTGA(const cocos2d::Rect& area, const std::string& 
 	delete[] imageBuffer;
 }
 
-Pixel*	glAddition::readPixels(const cocos2d::Rect& area, const std::string& filename)
+std::vector<Pixel>	glAddition::readPixels(const cocos2d::Rect& area)
 {
 	GLint width = area.size.width;
 	GLint height = area.size.height;
@@ -77,7 +77,7 @@ Pixel*	glAddition::readPixels(const cocos2d::Rect& area, const std::string& file
 	int imageSize = width * height * 3 * XPIXEL_BUFFER;
 
 	// Массив данных будущего изображения
-	// Выделяем необходимую память: ширина*высота*3 цветовых бита
+	// Выделяем необходимую память: ширина * высота * 3 цветовых бита
 	unsigned char* imageBuffer = new unsigned char[imageSize];
 	memset(imageBuffer, 0, imageSize);
 
@@ -85,96 +85,126 @@ Pixel*	glAddition::readPixels(const cocos2d::Rect& area, const std::string& file
 	glReadPixels(area.getMinX(), area.getMinY(), width, height,
 		GL_RGB, GL_UNSIGNED_BYTE, imageBuffer);
 
-	Pixel* imagePixelated = new Pixel[width * height];
+	std::vector<Pixel> pixelsVector;
 
-	int pixelNum = 0;
-	for (long i = 0; i < imageSize / XPIXEL_BUFFER; i++)
+	// int pixelNum = 0;
+	Pixel pixel;
+	for (long i = 0; i <= imageSize / XPIXEL_BUFFER; i++)
 	{
 		if (!(i % 3) && (i != 0))
-			pixelNum++;
+		{
+			pixelsVector.push_back(pixel);
+			// pixelNum++;
+		}
 
-		imagePixelated[pixelNum].rgb[i % 3] = imageBuffer[i];
+		pixel.rgb[i % 3] = imageBuffer[i];
 	}
 
-	return imagePixelated;
+	return pixelsVector;
 }
 
-int	glAddition::ImageAnalyzer::analyzePixels(Pixel* pPixels)
+void	glAddition::savePixels(const cocos2d::Rect& area, const std::string& filename)
 {
-	// TODO
-	const int width = 240, height = 240;
-	long imageSize = width * height;
+	std::ofstream output("dictionaries/kanji_origins/" + filename);
+	std::vector<Pixel> pixels = readPixels(area);
+	std::vector<std::vector<MONOCHROME_COLOR>> monochromeMatrix = pixelsToMonochromeMatrix(pixels, 15);
 
-	long blackPixels = 0;
-	
-	Pixel maxPixel = pPixels[0];
-	long maxCount = 1;
-
-	// put [] pixel array into [][]
-	Pixel image[width][height];
-	
-	for (long i = 0; i < width; i++)
+	// TODO : SAVE PIXEL MATRIX INTO BINFILE
+	for (std::vector<std::vector<MONOCHROME_COLOR>>::iterator it_mtx = monochromeMatrix.begin(); it_mtx != monochromeMatrix.end(); it_mtx++)
 	{
-		for (long j = 0; j < height; j++)
-			image[i][j] = pPixels[(i * height) + j];
+		for (std::vector<MONOCHROME_COLOR>::iterator it_line = (*it_mtx).begin(); it_line != (*it_mtx).end(); it_line++)
+		{
+			output << *it_line;
+		}
+		output << "\n";
 	}
 	//
+}
 
-	// count black pixels (for now only)
-	// CHECK BY SECTORS!!!
-	const int sectorCount = 10;
-	bool bSector[sectorCount][sectorCount]; // false = white, true = black
+std::vector<std::vector<MONOCHROME_COLOR>>	glAddition::loadMonochromeMatrixFromFile(const std::string& filename)
+{
+	std::ifstream inputFile(filename);
+	std::vector<std::vector<MONOCHROME_COLOR>> monochromeMatrix;
 
-	for (int i = 0; i < sectorCount; i++)
+	while (!inputFile.eof())
 	{
-		for (int j = 0; j < sectorCount; j++)
+		std::string inputString;
+		std::getline(inputFile, inputString);
+
+		std::vector<MONOCHROME_COLOR> matrixLine;
+		for (int i = 0; i < inputString.size(); i++)
 		{
-			// handle sector
-			long blackPixels = 0;
+			bool sign = inputString[i] - '0';
+			matrixLine.push_back(sign);
+		}
 
-			for (int x = (i * 24); x < (i * 24) + 24; x++)
-			{
-				for (int y = (j * 24); y < (j * 24) + 24; y++)
-				{
-					//handle pixel
-					bool blackPixel = true;
+		monochromeMatrix.push_back(matrixLine);
+		matrixLine.clear();
+	}
 
-					for (char k = 0; k < 3; k++)
-					{
-						if (image[x][y].rgb[k] > 40)
-						{
-							blackPixel = false;
-							break;
-						}
-					}
+	return monochromeMatrix;
+}
 
-					if (blackPixel)
-						blackPixels++;
-					//
-				}
-			}
-			//
+std::vector<std::vector<MONOCHROME_COLOR>>	glAddition::pixelsToMonochromeMatrix(const std::vector<Pixel> pixelsVector, const int sectorCountInLine)
+{
+	int imageWidthAndHeight = sqrt(pixelsVector.size());
 
-			if (blackPixels > (width / sectorCount) * (height / sectorCount) / 2)
-				bSector[i][j] = true;
+	// <PIXELVECTOR_TO_PIXELMATRIX>
+	std::vector<std::vector<Pixel>> pixelsMatrix;
+	for (long i = 0; i < imageWidthAndHeight; i++)
+	{
+		std::vector<Pixel> pixelsLine;
+		for (long j = 0; j < imageWidthAndHeight; j++)
+		{
+			pixelsLine.push_back(pixelsVector[(i * imageWidthAndHeight) + j]);
+		}
+		pixelsMatrix.push_back(pixelsLine);
+		pixelsLine.clear();
+	}
+	// </PIXELVECTOR_TO_PIXELMATRIX>
+
+
+	// <PIXELMATRIX_TO_MONOCHROME_MATRIX>
+	std::vector<std::vector<MONOCHROME_COLOR>> monochromeMatrix;
+	for (std::vector<std::vector<Pixel>>::iterator it_mtx = pixelsMatrix.begin(); it_mtx != pixelsMatrix.end(); it_mtx++)
+	{
+		for (std::vector<Pixel>::iterator it_line = it_mtx->begin(); it_line != it_mtx->end(); it_line++)
+		{
+
 		}
 	}
 
-	// analyze sectors and construct output
-	// for every ethalon compare sectors and output all approximately equals
+	int sectorSize = imageWidthAndHeight / sectorCountInLine;
+	for (int i = 0; i < sectorCountInLine; i++)
+	{
+		std::vector<MONOCHROME_COLOR> monochromeMatrixLine;
+		for (int j = 0; j < sectorCountInLine; j++)
+		{
+			// <HANDLE_THE_SECTOR>
+			long blackPixels = 0;
+			for (int x = (i * sectorSize); x < (i * sectorSize) + sectorSize; x++)
+			{
+				for (int y = (j * sectorSize); y < (j * sectorSize) + sectorSize; y++)
+				{
+					// <CHECK_SECTORS_PIXEL>
+					if (pixelsMatrix[x][y].rgb[0] < 32)
+					{
+						blackPixels++;
+					}
+					// </CHECK_SECTORS_PIXEL>
+				}
+			}
+			MONOCHROME_COLOR sectorColor = COLOR_WHITE;
+			if (blackPixels >= (sectorSize * sectorSize) / 2)
+			{
+				sectorColor = COLOR_BLACK;
+			}
+			monochromeMatrixLine.push_back(sectorColor);
+			// </HANDLE_THE_SECTOR>
+		}
+		monochromeMatrix.push_back(monochromeMatrixLine);
+	}
+	// </PIXELMATRIX_TO_MONOCHROME_MATRIX>
 
-	//
-
-	return NULL;
-}
-
-bool	glAddition::ImageAnalyzer::cvAnalyzeImage(const std::string& filename)
-{
-	return true;
-}
-
-unsigned char*	glAddition::ImageAnalyzer::loadTGA(const std::string& filename)
-{
-	//TODO IF COULDN'T ANALYZE WITHOUT IT
-	return nullptr;
+	return monochromeMatrix;
 }

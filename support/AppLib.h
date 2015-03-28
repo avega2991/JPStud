@@ -4,6 +4,11 @@
 
 #include <math.h>
 
+namespace applib
+{
+	// TODO : REPLACE ALL WITHIN
+}
+
 namespace geo
 {
 	class Line
@@ -14,6 +19,15 @@ namespace geo
 
 	cocos2d::Rect									getFloorBox(const cocos2d::Rect*);
 	int												getFloorOY(const cocos2d::Rect*);
+}
+
+namespace math
+{
+	class Matrix
+	{
+	public:
+		static std::vector<std::vector<bool>>			substract(std::vector<std::vector<bool>> firstMtx, std::vector<std::vector<bool>> secondMtx);
+	};
 }
 
 template<typename T1, typename T2, typename T3>

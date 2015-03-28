@@ -9,15 +9,17 @@
 #include "support\Word.h"
 #include "sprites\Item.h"
 #include "support\AppLib.h"
+#include "support\GLAddition.h"
 
+typedef int ID;
 
 class AppDictionary
 {
 private:
 	std::vector<std::vector<std::string>>									m_kanaRowsDictionary;
-	std::map<int, Kanji*>													m_kanjiDictionary;
-	std::map<int, DictionaryWord*>											m_wordsDictionary;
-	std::map<int, InventoryItem*>											m_itemsDictionary;
+	std::map<ID, Kanji*>													m_kanjiDictionary;
+	std::map<ID, DictionaryWord*>											m_wordsDictionary;
+	std::map<ID, InventoryItem*>											m_itemsDictionary;
 	std::map<std::string, Triad<std::string, std::string, std::string>> 	m_keyboardDictionary;	// 'key' -> <hira, kata, romaji>
 
 	// singleton object
@@ -42,16 +44,17 @@ public:
 	static AppDictionary*													getInstance();
 
 	std::vector<std::vector<std::string>>									getKanaRowsDictionary();
-	std::map<int, Kanji*>													getKanjiDictionary();
-	std::map<int, DictionaryWord*>											getWordsDictionary();
-	std::map<int, InventoryItem*>											getItemsDictionary();
+	std::map<ID, Kanji*>													getKanjiDictionary();
+	std::map<ID, DictionaryWord*>											getWordsDictionary();
+	std::map<ID, InventoryItem*>											getItemsDictionary();
 	std::map<std::string, Triad<std::string, std::string, std::string>> 	getKeyboardDictionary();
 	
-	Kanji*																	getKanjiByID(int);
-	DictionaryWord*															getWordByID(int);
-	InventoryItem*															getItemByID(int);
+	Kanji*																	getKanjiByID(ID);
+	DictionaryWord*															getWordByID(ID);
+	InventoryItem*															getItemByID(ID);
 
 	std::vector<Kanji*>														getKanjiByRomaji(const std::string&);
+	std::vector<Kanji*>														getKanjiByImage(const cocos2d::Rect& area);
 
 	std::vector<DictionaryWord*>											getWordsByRomaji(const std::string&);
 	std::vector<DictionaryWord*>											getWordsByKana(const std::string&);

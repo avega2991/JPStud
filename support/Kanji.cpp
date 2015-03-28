@@ -78,3 +78,25 @@ std::map<std::string, std::vector<std::string>>	Kanji::getDescription()
 {
 	return this->m_description;
 }
+
+std::string	Kanji::getFormattedDescription()
+{
+	std::map<std::string, std::vector<std::string>> desc = m_description;
+	std::stringstream formattedString;
+
+	for (std::map<std::string, std::vector<std::string>>::iterator it = desc.begin(); it != desc.end(); it++)
+	{
+		formattedString << it->first << ":\n";
+
+		for (std::vector<std::string>::iterator it_examples = it->second.begin(); it_examples != it->second.end(); it_examples++)
+		{
+			formattedString << *it_examples << "\n";
+		}
+
+		formattedString << "___________________________\n";
+	}
+
+	std::string result = formattedString.str();
+
+	return result;
+}

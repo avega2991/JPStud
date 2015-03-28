@@ -145,6 +145,11 @@ std::map<std::string, Triad<std::string, std::string, std::string>>	AppDictionar
 	return m_keyboardDictionary;
 }
 
+Kanji*	AppDictionary::getKanjiByID(ID id)
+{
+	return m_kanjiDictionary[id];
+}
+
 std::vector<Kanji*>	AppDictionary::getKanjiByImage(const cocos2d::Rect& area)
 {
 	std::vector<glAddition::Pixel> pixels = glAddition::readPixels(area);

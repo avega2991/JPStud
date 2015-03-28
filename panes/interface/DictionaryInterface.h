@@ -23,12 +23,18 @@
 #define KANA_PAGE_HINT_ORDER									3
 #define KANA_PAGE_MENU_LABEL_ORDER								4
 
+#define KANJI_TAB_RESULT_LAYER_ORDER							1
+#define KANJI_TAB_SPRITE_BORDER_ORDER							2
+#define KANJI_TAB_SPRITE_ORDER									3
+#define KANJI_TAG_HINT_ORDER									4
 
 // LAYER
-#define DICTIONARY_HINT											10
-#define DICTIONARY_KANA_PAGE_UNDERLAYER							11
-#define DICTIONARY_KANA_PAGE_LAYER								12
-#define DICTIONARY_KANA_PAGE_HINT								13
+#define DICTIONARY_TAB_LAYER									10
+#define DICTIONARY_HINT											11
+#define DICTIONARY_KANA_PAGE_UNDERLAYER							12
+#define DICTIONARY_KANA_PAGE_LAYER								13
+#define DICTIONARY_KANA_PAGE_HINT								14
+#define DICTIONARY_SEARCH_RESULT								15
 
 #define KANA_PAGE_BACKGROUND									20
 #define KANA_PAGE_SPRITE										21
@@ -115,6 +121,7 @@ private:
 	
 	// SUBFUNCTIONS
 	void														_createKanjiTab();
+	void														_createKanjiResults();
 	void														_createWordsTab();
 	void														_createGrammarTab();
 	void														_createKanaTab();

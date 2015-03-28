@@ -24,5 +24,6 @@ public:
 	std::string														getSymbol();
 	cocos2d::Sprite*												getSprite();
 	std::map<std::string, std::vector<std::string>>					getDescription();
+	std::string														getFormattedDescription();
 
 };

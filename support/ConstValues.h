@@ -1,0 +1,49 @@
+#pragma once 
+
+// SCENES
+#define MAINMENU_SCENE				100
+#define EXIT_SCENE					101
+#define FIRST_SCENE					102
+
+// <TAGS>
+
+// LAYERS
+#define MAIN_LAYER					200
+#define INTERFACE_LAYER				210
+#define SUBMENU_LAYER				211
+#define PLAYER_LAYER				230
+#define DECORATION_LAYER			240
+
+// PERSONS && SPRITES
+#define PLAYER						1000
+#define NPC							1001
+#define INTERFACE_OBJECT			1010
+#define INTERFACE_DIALOG			1011
+#define INTERFACE_POPUP				1012
+#define DIALOG_BACKGROUND			1013
+#define POPUP_BACKGROUND			1014
+
+// </TAGS>
+
+// PRIORITIES (LAYERS)
+#define BACKGROUND_ORDER			1
+#define PLAYER_LAYER_ORDER			2
+#define INTERFACE_ORDER				3
+
+// PRIORITIES (EVENT LISTENER)
+#define LOWEST_PRIORITY				4
+#define BACKGROUND_PRIORITY			4
+#define PLAYER_PRIORITY				3
+#define ITEM_PRIORITY				2
+#define NPC_PRIORITY				2
+#define DIALOG_PRIORITY				1
+#define HIGHEST_PRIORITY			1
+
+
+//CONSTANTS
+
+//
+
+// MACRO
+//#define IF{x}ELSE{y}ANYWAY{z} if{xz}else{yz}
+//

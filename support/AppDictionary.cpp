@@ -187,14 +187,15 @@ std::vector<Kanji*>	AppDictionary::getKanjiByImage(const cocos2d::Rect& area)
 
 	// <FIND_RESULT>
 	std::vector<Kanji*> kanjiResult;
-	for (std::map<ID, Kanji*>::iterator it = kanjiDictionary.begin(); it != kanjiDictionary.end(); it++)
+	for (std::map<ID, Kanji*>::iterator it = kanjiDictionary.begin(); 
+		it != kanjiDictionary.end() || kanjiResult.size() >= KANJI_SEARCH_MAX_RESULT; it++)
 	{
-		if (collisionMap[it->first] == minCollision)
+		if (collisionMap[it->first] <= minCollision + KANJI_SEARCH_COLLISION_MAX_ERROR)
 		{
 			kanjiResult.push_back(it->second);
 		}
 	}
-	// <//FIND_RESULT>
+	// </FIND_RESULT>
 
 	return kanjiResult;
 }

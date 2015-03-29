@@ -11,7 +11,11 @@
 #include "support\AppLib.h"
 #include "support\GLAddition.h"
 
+#define KANJI_SEARCH_COLLISION_MAX_ERROR									6
+#define KANJI_SEARCH_MAX_RESULT												9
+
 typedef int ID;
+
 
 class AppDictionary
 {

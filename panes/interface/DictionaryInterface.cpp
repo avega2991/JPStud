@@ -63,7 +63,10 @@ DictionaryInterface::DictionaryInterface()
 	this->addChild(dictionaryPageTwo, DICTIONARY_PAGE_ORDER, DICTIONARY_PAGE_TWO);
 	
 	m_currentTab = NULL;
+	kanji->activate();
 	this->switchCurrentTab(DB_KANJI);
+
+	m_currentKanjiInputType = DICTIONARY_KANJI_INPUT_TYPE_IMAGE;
 
 }
 
@@ -101,6 +104,10 @@ void	DictionaryInterface::switchCurrentTab(BYTE tabTag)
 		this->unschedule(schedule_selector(DictionaryInterface::onEachFrameWordTab));
 		m_kanaString.clear();
 		//
+
+		// SET DEFAULT KANA TYPE
+		m_currentKanaType = DICTIONARY_KANA_TYPE_HIRAGANA;
+		//
 	}
 
 	switch (tabTag)
@@ -128,12 +135,30 @@ void	DictionaryInterface::tabmenuCallback(Ref* pSender)
 {
 	BYTE tabTag = ((MenuItem*) pSender)->getTag();
 
-	switchCurrentTab(tabTag);
+	short prevTab = m_currentTab;
+	MenuItemImage* senderButton = (MenuItemImage*)pSender;
+	MenuItemImage* prevSender = (MenuItemImage*)senderButton->getParent()->getChildByTag(prevTab);
+	
+	if (prevSender != nullptr)
+		prevSender->unselected();
+
+	senderButton->selected();
+	prevSender = senderButton;
+
+	switchCurrentTab(senderButton->getTag());
 }
 
 void	DictionaryInterface::kanaTypeMenuCallback(Ref* pSender)
 {
-	m_currentKanaType = ((MenuItem*)pSender)->getTag();
+	short prevKanaType = m_currentKanaType;
+	MenuItemImage* senderButton = (MenuItemImage*)pSender;
+	MenuItemImage* prevSender = (MenuItemImage*)senderButton->getParent()->getChildByTag(prevKanaType);
+
+	m_currentKanaType = senderButton->getTag();
+	
+	prevSender->unselected();
+	senderButton->selected();
+	prevSender = senderButton;
 }
 
 // KANA TAB CALLBACKS
@@ -158,7 +183,14 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	kanaPage->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	kanaPageLayer->addChild(kanaPage, KANA_PAGE_BACKGROUND_ORDER, KANA_PAGE_BACKGROUND);
 	
-	m_currentKanaSpriteInitFilename = "animations/kanatips/hiragana/" + chosenItemName + "/ (1).jpg";
+	std::string kanaTypeFolder;
+
+	if (m_currentKanaType == DICTIONARY_KANA_TYPE_HIRAGANA)
+		kanaTypeFolder = "hiragana";
+	else
+		kanaTypeFolder = "katakana";
+
+	m_currentKanaSpriteInitFilename = "animations/kanatips/" + kanaTypeFolder + "/" + chosenItemName + "/ (1).jpg";
 	auto kanaSprite = Sprite::create(m_currentKanaSpriteInitFilename);
 	auto kanaSpritePosition = Point(kanaPage->getPosition().x - kanaPage->getContentSize().width / 5 + 5,
 		kanaPage->getPosition().y + kanaPage->getContentSize().height / 4);
@@ -328,7 +360,7 @@ void	DictionaryInterface::brushScaleButtonCallback(Ref* pSender)
 }
 
 // KANJI TAB CALLBACKS
-void	DictionaryInterface::switchSearchTypeCallback(Ref* pSender)
+void	DictionaryInterface::switchKanjiInputTypeCallback(Ref* pSender)
 {
 	// TODO
 }
@@ -346,7 +378,7 @@ void	DictionaryInterface::kanjiEnterButtonCallback(Ref* pSender)
 
 	// WARNING!!! ONLY FOR TEACHING!!!
 	//
-	// this->teachKanjiSystemSinceID(11);
+	// this->teachKanjiSystemSinceID(21);
 	//
 	//
 }
@@ -502,10 +534,10 @@ void	DictionaryInterface::_createKanjiTab()
 	// <MENU>
 	auto imageTypeButton = MenuItemImage::create("textures/interface/dictionary/side_button.png",
 		"textures/interface/dictionary/side_button_selected.png",
-		CC_CALLBACK_1(DictionaryInterface::switchSearchTypeCallback, this));
+		CC_CALLBACK_1(DictionaryInterface::switchKanjiInputTypeCallback, this));
 	auto textTypeButton = MenuItemImage::create("textures/interface/dictionary/side_button.png",
 		"textures/interface/dictionary/side_button_selected.png",
-		CC_CALLBACK_1(DictionaryInterface::switchSearchTypeCallback, this));
+		CC_CALLBACK_1(DictionaryInterface::switchKanjiInputTypeCallback, this));
 
 	auto helpButton = MenuItemImage::create("textures/interface/dictionary/button.png",
 		"textures/interface/dictionary/button_selected.png",
@@ -665,8 +697,6 @@ void	DictionaryInterface::_createWordsTab()
 	// </TEXTFIELD>
 
 	// <SWITCH_KANA_TYPE_MENU>
-	m_currentKanaType = DICTIONARY_KANA_TYPE_HIRAGANA;
-
 	auto typeHiragana = MenuItemImage::create("textures/interface/dictionary/button.png",
 		"textures/interface/dictionary/button_selected.png",
 		CC_CALLBACK_1(DictionaryInterface::kanaTypeMenuCallback, this));
@@ -713,6 +743,9 @@ void	DictionaryInterface::_createWordsTab()
 
 	lText->setTextColor(Color4B(0, 0, 0, 255));
 
+	m_currentKanaType = DICTIONARY_KANA_TYPE_HIRAGANA;
+	typeHiragana->activate();
+
 	m_tabLayer->addChild(kanaTypeMenu, 1);
 	m_tabLayer->addChild(lHiragana, 2);
 	m_tabLayer->addChild(lKatakana, 2);
@@ -758,6 +791,39 @@ void	DictionaryInterface::_createKanaTab()
 
 		y -= 20;
 	}
+
+	// <KANA_TYPE_MENU>
+	auto typeHiragana = MenuItemImage::create("textures/interface/dictionary/button.png",
+		"textures/interface/dictionary/button_selected.png",
+		CC_CALLBACK_1(DictionaryInterface::kanaTypeMenuCallback, this));
+	auto typeKatakana = MenuItemImage::create("textures/interface/dictionary/button.png",
+		"textures/interface/dictionary/button_selected.png",
+		CC_CALLBACK_1(DictionaryInterface::kanaTypeMenuCallback, this));
+	
+	typeHiragana->setTag(DICTIONARY_KANA_TYPE_HIRAGANA);
+	typeKatakana->setTag(DICTIONARY_KANA_TYPE_KATAKANA);
+
+	typeHiragana->setPosition(Vec2(-80, 0));
+	typeKatakana->setPosition(Vec2(80, 0));
+	
+	Menu* kanaTypeMenu = Menu::create(typeHiragana, typeKatakana, nullptr);
+	kanaTypeMenu->setPosition(Vec2(c_splitLinePosition.x - 10, c_splitLinePosition.y - 50));
+
+	auto lHiragana = Label::create("Hiragana", "fonts/Xerox Serif Wide.ttf", 18, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+	auto lKatakana = Label::create("Katakana", "fonts/Xerox Serif Wide.ttf", 18, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+	
+	lHiragana->setPosition(Vec2(kanaTypeMenu->getPosition().x + typeHiragana->getPosition().x,
+		kanaTypeMenu->getPosition().y + typeHiragana->getPosition().y));
+	lKatakana->setPosition(Vec2(kanaTypeMenu->getPosition().x + typeKatakana->getPosition().x,
+		kanaTypeMenu->getPosition().y + typeKatakana->getPosition().y));
+	
+	m_currentKanaType = DICTIONARY_KANA_TYPE_HIRAGANA;
+	typeHiragana->activate();
+
+	m_tabLayer->addChild(kanaTypeMenu, 1);
+	m_tabLayer->addChild(lHiragana, 2);
+	m_tabLayer->addChild(lKatakana, 2);
+	// </KANA_TYPE_MENU)>
 }
 
 void	DictionaryInterface::_underlayerAfterFadeOut()

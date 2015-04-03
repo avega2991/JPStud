@@ -93,6 +93,7 @@ private:
 	short														m_currentTab;
 
 	short														m_currentKanaType;
+	short														m_currentKanjiInputType;
 
 	// WORDS TAB
 	std::vector<std::string>									m_kanaString;
@@ -108,7 +109,7 @@ private:
 	void														tabmenuCallback(Ref*);
 	void														kanaTypeMenuCallback(Ref*);
 	// KANJI TAB CALLBACKS
-	void														switchSearchTypeCallback(Ref*);
+	void														switchKanjiInputTypeCallback(Ref*);
 	void														kanjiEnterButtonCallback(Ref*);
 	void														searchResultButtonCallback(Ref*);
 	// WORDS TAB CALLBACKS

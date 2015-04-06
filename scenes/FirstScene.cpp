@@ -110,6 +110,9 @@ bool FirstScene::init()
 	m_soundEngine = CocosDenshion::SimpleAudioEngine::getInstance();
 	//m_soundEngine->playBackgroundMusic("soundeffects/background/BrunuhVille - Magic Of Love.mp3");
 
+	// TMX Include
+	// this->addChild(TMXTiledMap::create("D:/cocos2dx/Tiled/examples/isometric_grass_and_water.tmx"), 10);
+
 	return true;
 }
 

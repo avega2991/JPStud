@@ -174,7 +174,7 @@ void	PopupMenu::closePopup()
 	this->closePopupCallback(nullptr);
 }
 
-// GET
+// <GET>
 Label*	PopupMenu::getHeaderText()
 {
 	return m_popupHeader;
@@ -189,8 +189,9 @@ Menu*	PopupMenu::getCurrentMenu()
 {
 	return m_popupMenu;
 }
+// </GET>
 
-// SET
+// <SET>
 void	PopupMenu::setHeaderText(const std::string& text)
 {
 	m_popupHeader->setString(text);
@@ -199,6 +200,15 @@ void	PopupMenu::setHeaderText(const std::string& text)
 void	PopupMenu::setCurrentText(const std::string& text)
 {
 	m_popupText->setString(text);
+}
+// </SET>
+
+void	PopupMenu::enableAutoClose(bool bEnable)
+{
+	if (bEnable)
+		m_popupMenu->removeFromParent();
+	else
+		this->addChild(m_popupMenu, POPUP_MENU_ORDER);
 }
 
 // SUBFUNCTIONS && CALLBACKS

@@ -168,7 +168,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 
 	//
 
-	auto chosenItemName = ((MenuItemFont*)pSender)->getName();
+	m_currentKanaPage = ((MenuItemFont*)pSender)->getName();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto appDictionary = AppDictionary::getInstance();
 
@@ -190,7 +190,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	else
 		kanaTypeFolder = "katakana";
 
-	m_currentKanaSpriteInitFilename = "animations/kanatips/" + kanaTypeFolder + "/" + chosenItemName + "/ (1).jpg";
+	m_currentKanaSpriteInitFilename = "animations/kanatips/" + kanaTypeFolder + "/" + m_currentKanaPage + "/ (1).jpg";
 	auto kanaSprite = Sprite::create(m_currentKanaSpriteInitFilename);
 	auto kanaSpritePosition = Point(kanaPage->getPosition().x - kanaPage->getContentSize().width / 5 + 5,
 		kanaPage->getPosition().y + kanaPage->getContentSize().height / 4);
@@ -246,7 +246,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	Vector<SpriteFrame*> kanaSpriteFrames;
 	for (int i = KANA_ANIMATION_MAX_FRAMES; i >= 1; i--)
 	{
-		SpriteFrame* newFrame = SpriteFrame::create("animations/kanatips/hiragana/" + chosenItemName + "/ (" + std::to_string(i) + ").jpg",
+		SpriteFrame* newFrame = SpriteFrame::create("animations/kanatips/" + kanaTypeFolder + "/" + m_currentKanaPage + "/ (" + std::to_string(i) + ").jpg",
 			Rect(0, 0, 238, 238));
 
 		if (newFrame->getTexture())
@@ -263,7 +263,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	hint->setCurrentText("We understand your wish to learn fast\nbut it's better to write symbols with note");
 	hint->setHeaderText(" ");
 
-	std::string kanaKeyButtonChar = appDictionary->getKeyButtonByRomaji(chosenItemName);
+	std::string kanaKeyButtonChar = appDictionary->getKeyButtonByRomaji(m_currentKanaPage);
 	Label* keyButtonLabel = Label::create("[" + kanaKeyButtonChar + "] on English\nkeyboard", "Arial", 18,
 		Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
 	keyButtonLabel->setTextColor(Color4B(0, 0, 0, 255));
@@ -294,6 +294,10 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 
 	underLayer->setOpacity(0);
 	underLayer->runAction(FadeIn::create(0.5f));
+
+	// <LAUNCH_SCHEDULE_FOR_EXAMPLES>
+	this->schedule(schedule_selector(DictionaryInterface::onEachFrameExampleView), 1.0f);
+	// </LAUNCH_SCHEDULE_FOR_EXAMPLES>
 }
 
 void	DictionaryInterface::closeButtonCallback(Ref* pSender)
@@ -305,6 +309,8 @@ void	DictionaryInterface::closeButtonCallback(Ref* pSender)
 	underLayer->runAction(Sequence::create(FadeOut::create(0.5f),
 		CallFunc::create(CC_CALLBACK_0(DictionaryInterface::_underlayerAfterFadeOut, this)), nullptr));
 	kanaPageLayer->removeFromParentAndCleanup(true);
+
+	this->unschedule(schedule_selector(DictionaryInterface::onEachFrameExampleView));
 
 	if (hint != nullptr)
 	{
@@ -359,6 +365,30 @@ void	DictionaryInterface::brushScaleButtonCallback(Ref* pSender)
 	brushDepthLabel->setString("Brush depth: " + std::to_string((int)m_canvas->getBrushDepth()));
 }
 
+void	DictionaryInterface::onEachFrameExampleView(float dt)
+{
+	static long secondsCounter = 0;
+	static short exampleNum = 1;
+
+	if (secondsCounter == 0 || secondsCounter % 5 == 0)
+	{
+		auto kanaPageLayer = this->getChildByTag(DICTIONARY_KANA_PAGE_LAYER);
+		
+		PopupMenu* exampleImage = (PopupMenu*)kanaPageLayer->getChildByTag(KANA_PAGE_EXAMPLE);
+		if (exampleImage != nullptr)
+			exampleImage->closePopup();
+
+		auto visibleSize = Director::getInstance()->getVisibleSize();
+		exampleImage = PopupMenu::create("textures/kanapages/hiragana/" + m_currentKanaPage + "/" + std::to_string(exampleNum) + ".png",
+			visibleSize.width * 2 / 3 - 40, visibleSize.height / 2);
+		kanaPageLayer->addChild(exampleImage, KANA_PAGE_HINT_ORDER, KANA_PAGE_EXAMPLE);
+
+		exampleNum %= 3;
+		exampleNum++;
+	}
+
+	secondsCounter++;
+}
 // KANJI TAB CALLBACKS
 void	DictionaryInterface::switchKanjiInputTypeCallback(Ref* pSender)
 {

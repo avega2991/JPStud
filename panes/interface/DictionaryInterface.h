@@ -46,6 +46,7 @@
 #define KANA_PAGE_BRUSH_SCALEDOWN								35
 #define KANA_PAGE_BRUSH_SCALEUP									36
 #define KANA_PAGE_BRUSH_DEPTH_HINT								37
+#define KANA_PAGE_EXAMPLE										38
 
 
 // DICTIONARY TABMENU BUTTONS
@@ -100,6 +101,7 @@ private:
 
 	// KANA TAB
 	std::string													m_currentKanaSpriteInitFilename;
+	std::string													m_currentKanaPage;
 
 
 private:
@@ -120,6 +122,8 @@ private:
 	void														clearCanvasButtonCallback(Ref*);
 	void														setOutlineButtonCallback(Ref*);
 	void														brushScaleButtonCallback(Ref*);
+
+	void														onEachFrameExampleView(float);
 	// OTHER CALLBACKS
 	void														helpButtonCallback(Ref*);
 	// </CALLBACKS>

@@ -44,6 +44,8 @@ public:
 	void											setCurrentText(const std::string&);
 	void											setCurrentMenu(cocos2d::Menu*);
 	
+	void											enableAutoClose(bool);
+
 	// SUBFUNCTIONS && CALLBACKS
 	void											closePopupCallback(Ref* pSender);
 	void											onCreate(float dt);

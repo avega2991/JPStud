@@ -36,6 +36,41 @@ PopupMenu::PopupMenu()
 	this->schedule(schedule_selector(PopupMenu::onCreate));
 }
 
+PopupMenu::PopupMenu(float x, float y)
+{
+	m_popupBackground = Sprite::create("textures/interface/popup/popupmenu_background.png");
+
+	m_popupBackground->setPosition(Vec2(x, y - POPUP_VERTICAL_PX_OFFSET));
+	m_popupBackground->setTag(POPUP_BACKGROUND);
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+
+	m_popupHeader = Label::createWithTTF("\n", "fonts/Xerox Serif Wide.ttf", 18);
+	m_popupHeader->setAnchorPoint(Vec2(0.5f, 0));
+	m_popupHeader->setPosition(Vec2(m_popupBackground->getPosition().x,
+		m_popupBackground->getPosition().y + m_popupBackground->getContentSize().height / 2));
+
+	m_popupText = Label::createWithTTF("\n", "fonts/Xerox Sans Serif Wide Oblique.ttf", 16);
+	m_popupText->setAnchorPoint(Vec2(0, 1));
+	m_popupText->setPosition(Vec2(m_popupBackground->getPosition().x - m_popupBackground->getContentSize().width / 2 + POPUP_BUTTON_PX_OFFSET,
+		m_popupBackground->getPosition().y + m_popupBackground->getContentSize().height / 2 - POPUP_VERTICAL_PX_OFFSET));
+
+	MenuItemFont::setFontSize(18);
+	auto ok = MenuItemFont::create("OK!", CC_CALLBACK_1(PopupMenu::closePopupCallback, this));
+	m_popupMenu = Menu::create(ok, nullptr);
+	m_popupMenu->setAnchorPoint(Vec2(0, 0));
+	m_popupMenu->setPosition(Vec2(m_popupBackground->getPosition().x + m_popupBackground->getContentSize().width / 2 - POPUP_BUTTON_PX_OFFSET,
+		m_popupBackground->getPosition().y - m_popupBackground->getContentSize().height / 2 - POPUP_BUTTON_PX_OFFSET / 2));
+
+	this->addChild(m_popupBackground, POPUP_BACKGROUND_ORDER);
+	this->addChild(m_popupHeader, POPUP_TEXT_ORDER);
+	this->addChild(m_popupText, POPUP_TEXT_ORDER);
+	this->addChild(m_popupMenu, POPUP_MENU_ORDER);
+
+	this->setContentSize(m_popupBackground->getContentSize());
+
+	this->schedule(schedule_selector(PopupMenu::onCreate));
+}
+
 PopupMenu::PopupMenu(float x, float y, float width, float height)
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -67,41 +102,6 @@ PopupMenu::PopupMenu(float x, float y, float width, float height)
 	this->addChild(m_popupHeader, POPUP_TEXT_ORDER);
 	this->addChild(m_popupText, POPUP_TEXT_ORDER);
 	this->addChild(m_popupMenu, POPUP_MENU_ORDER);
-
-	this->schedule(schedule_selector(PopupMenu::onCreate));
-}
-
-PopupMenu::PopupMenu(const std::string& backgroundFilename, float x, float y)
-{
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-
-	Sprite* popupBackground = Sprite::create(backgroundFilename);
-	popupBackground->setPosition(Vec2(x, y - POPUP_VERTICAL_PX_OFFSET));
-	popupBackground->setTag(POPUP_BACKGROUND);
-
-	m_popupHeader = Label::createWithTTF("\n", "fonts/Xerox Serif Wide.ttf", 18);
-	m_popupHeader->setAnchorPoint(Vec2(0.5f, 0));
-	m_popupHeader->setPosition(Vec2(popupBackground->getPosition().x,
-		popupBackground->getPosition().y + popupBackground->getContentSize().height / 2));
-
-	m_popupText = Label::createWithTTF("\n", "fonts/Xerox Sans Serif Wide Oblique.ttf", 16);
-	m_popupText->setAnchorPoint(Vec2(0, 1));
-	m_popupText->setPosition(Vec2(popupBackground->getPosition().x - popupBackground->getContentSize().width / 2 + POPUP_BUTTON_PX_OFFSET,
-		popupBackground->getPosition().y + popupBackground->getContentSize().height / 2 - POPUP_VERTICAL_PX_OFFSET));
-
-	MenuItemFont::setFontSize(18);
-	auto ok = MenuItemFont::create("OK!", CC_CALLBACK_1(PopupMenu::closePopupCallback, this));
-	m_popupMenu = Menu::create(ok, nullptr);
-	m_popupMenu->setAnchorPoint(Vec2(0, 0));
-	m_popupMenu->setPosition(Vec2(popupBackground->getPosition().x + popupBackground->getContentSize().width / 2 - POPUP_BUTTON_PX_OFFSET,
-		popupBackground->getPosition().y - popupBackground->getContentSize().height / 2 - POPUP_BUTTON_PX_OFFSET / 2));
-
-	this->addChild(popupBackground, POPUP_BACKGROUND_ORDER);
-	this->addChild(m_popupHeader, POPUP_TEXT_ORDER);
-	this->addChild(m_popupText, POPUP_TEXT_ORDER);
-	this->addChild(m_popupMenu, POPUP_MENU_ORDER);
-
-	this->setContentSize(popupBackground->getContentSize());
 
 	this->schedule(schedule_selector(PopupMenu::onCreate));
 }
@@ -157,9 +157,9 @@ PopupMenu*	PopupMenu::create(const std::string& text)
 
 PopupMenu*	PopupMenu::create(const std::string& backgroundFilename, float x, float y)
 {
-	PopupMenu* pPopup = new PopupMenu(backgroundFilename, x, y);
+	PopupMenu* pPopup = new PopupMenu(x, y);
 
-	if (pPopup->init())
+	if (pPopup->init() && pPopup->initWithImage(backgroundFilename))
 	{
 		pPopup->autorelease();
 		return pPopup;
@@ -167,6 +167,31 @@ PopupMenu*	PopupMenu::create(const std::string& backgroundFilename, float x, flo
 
 	CC_SAFE_DELETE(pPopup);
 	return nullptr;
+}
+
+bool	PopupMenu::initWithImage(const std::string& backgroundFilename)
+{
+	Sprite* newImage = Sprite::create(backgroundFilename);
+	if (newImage != nullptr)
+	{
+		auto oldPosition = m_popupBackground->getPosition();
+		m_popupBackground->removeFromParent();
+		m_popupBackground = newImage;
+		m_popupBackground->setPosition(oldPosition);
+		this->addChild(m_popupBackground, POPUP_BACKGROUND_ORDER, POPUP_BACKGROUND);
+
+		// <UPDATE_RELATIVE_POSITIONS>
+		m_popupHeader->setPosition(Vec2(m_popupBackground->getPosition().x,
+			m_popupBackground->getPosition().y + m_popupBackground->getContentSize().height / 2));
+		m_popupMenu->setPosition(Vec2(m_popupBackground->getPosition().x + m_popupBackground->getContentSize().width / 2 - POPUP_BUTTON_PX_OFFSET,
+			m_popupBackground->getPosition().y - m_popupBackground->getContentSize().height / 2 - POPUP_BUTTON_PX_OFFSET / 2));
+		m_popupText->setPosition(Vec2(m_popupBackground->getPosition().x - m_popupBackground->getContentSize().width / 2 + POPUP_BUTTON_PX_OFFSET,
+			m_popupBackground->getPosition().y + m_popupBackground->getContentSize().height / 2 - POPUP_VERTICAL_PX_OFFSET));
+		// </UPDATE_RELATIVE_POSITIONS>
+		return true;
+	}
+	
+	return false;
 }
 
 void	PopupMenu::closePopup()
@@ -206,7 +231,10 @@ void	PopupMenu::setCurrentText(const std::string& text)
 void	PopupMenu::enableAutoClose(bool bEnable)
 {
 	if (bEnable)
-		m_popupMenu->removeFromParent();
+	{
+		if (m_popupMenu->getParent())
+			m_popupMenu->removeFromParent();
+	}
 	else
 		this->addChild(m_popupMenu, POPUP_MENU_ORDER);
 }

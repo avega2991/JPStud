@@ -19,14 +19,18 @@
 class PopupMenu : public cocos2d::Layer
 {
 private:
+	cocos2d::Sprite*								m_popupBackground;
 	cocos2d::Label*									m_popupHeader;
 	cocos2d::Label*									m_popupText;
 	cocos2d::Menu*									m_popupMenu; // contains only 'OK' button
 	
+private:
+	virtual bool									initWithImage(const std::string& backgroundFilename);
+
 public:
 	PopupMenu();
+	PopupMenu(float x, float y);
 	PopupMenu(float x, float y, float width, float height);
-	PopupMenu(const std::string& backgroundFilename, float x, float y);
 	~PopupMenu();
 
 	static PopupMenu*								create();

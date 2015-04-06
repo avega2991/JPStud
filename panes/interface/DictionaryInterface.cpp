@@ -296,7 +296,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	underLayer->runAction(FadeIn::create(0.5f));
 
 	// <LAUNCH_SCHEDULE_FOR_EXAMPLES>
-	this->schedule(schedule_selector(DictionaryInterface::onEachFrameExampleView), 1.0f);
+	this->schedule(schedule_selector(DictionaryInterface::onEachFrameExampleView), 0.1f);
 	// </LAUNCH_SCHEDULE_FOR_EXAMPLES>
 }
 
@@ -367,10 +367,10 @@ void	DictionaryInterface::brushScaleButtonCallback(Ref* pSender)
 
 void	DictionaryInterface::onEachFrameExampleView(float dt)
 {
-	static long secondsCounter = 0;
+	static long millisecondsCounter = 0;
 	static short exampleNum = 1;
 
-	if (secondsCounter == 0 || secondsCounter % 5 == 0)
+	if (millisecondsCounter == 0 || millisecondsCounter % 50 == 0)
 	{
 		auto kanaPageLayer = this->getChildByTag(DICTIONARY_KANA_PAGE_LAYER);
 		
@@ -379,15 +379,30 @@ void	DictionaryInterface::onEachFrameExampleView(float dt)
 			exampleImage->closePopup();
 
 		auto visibleSize = Director::getInstance()->getVisibleSize();
-		exampleImage = PopupMenu::create("textures/kanapages/hiragana/" + m_currentKanaPage + "/" + std::to_string(exampleNum) + ".png",
-			visibleSize.width * 2 / 3 - 40, visibleSize.height / 2);
-		kanaPageLayer->addChild(exampleImage, KANA_PAGE_HINT_ORDER, KANA_PAGE_EXAMPLE);
+		std::string kanaTypeFolder;
+		if (m_currentKanaType == DICTIONARY_KANA_TYPE_HIRAGANA)
+			kanaTypeFolder = "hiragana";
+		else
+			kanaTypeFolder = "katakana";
 
-		exampleNum %= 3;
-		exampleNum++;
+		exampleImage = PopupMenu::create("textures/kanapages/" + kanaTypeFolder + "/" + m_currentKanaPage + "/" + std::to_string(exampleNum) + ".png",
+			visibleSize.width * 2 / 3 - 40, visibleSize.height / 2);
+
+		if (exampleImage != nullptr)
+		{
+			kanaPageLayer->addChild(exampleImage, KANA_PAGE_HINT_ORDER, KANA_PAGE_EXAMPLE);
+			exampleImage->enableAutoClose(true);
+
+			exampleNum++;
+		}
+		else
+		{
+			exampleNum = 1;
+			millisecondsCounter = -1;
+		}
 	}
 
-	secondsCounter++;
+	millisecondsCounter++;
 }
 // KANJI TAB CALLBACKS
 void	DictionaryInterface::switchKanjiInputTypeCallback(Ref* pSender)

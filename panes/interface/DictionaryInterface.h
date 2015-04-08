@@ -102,7 +102,7 @@ private:
 	// KANA TAB
 	std::string													m_currentKanaSpriteInitFilename;
 	std::string													m_currentKanaPage;
-
+	short														m_kanaPageBrushDepth;
 
 private:
 	void														switchCurrentTab(BYTE tabTag);

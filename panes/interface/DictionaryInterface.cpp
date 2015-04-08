@@ -62,12 +62,15 @@ DictionaryInterface::DictionaryInterface()
 	this->addChild(dictionaryPageOne, DICTIONARY_PAGE_ORDER, DICTIONARY_PAGE_ONE);
 	this->addChild(dictionaryPageTwo, DICTIONARY_PAGE_ORDER, DICTIONARY_PAGE_TWO);
 	
+	// <OTHER_INIT>
 	m_currentTab = NULL;
 	kanji->activate();
 	this->switchCurrentTab(DB_KANJI);
 
 	m_currentKanjiInputType = DICTIONARY_KANJI_INPUT_TYPE_IMAGE;
 
+	m_kanaPageBrushDepth = MAX_BRUSH_DEPTH_PX - 2;
+	// </OTHER INIT>
 }
 
 DictionaryInterface::~DictionaryInterface()
@@ -200,6 +203,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	m_canvas = Canvas::create();
 	m_canvas->setPosition(Vec2(kanaPage->getPosition().x - kanaPage->getContentSize().width / 2 + 20,
 		kanaPage->getPosition().y - kanaPage->getContentSize().height / 2 + 70));
+	m_canvas->setBrushDepth(m_kanaPageBrushDepth);
 	kanaPageLayer->addChild(m_canvas, KANA_PAGE_SPRITE_ORDER);
 
 	// <KANA_PAGE_MENU>
@@ -352,12 +356,13 @@ void	DictionaryInterface::brushScaleButtonCallback(Ref* pSender)
 	switch (scaleTag)
 	{
 	case KANA_PAGE_BRUSH_SCALEUP:
-		m_canvas->setBrushDepth(m_canvas->getBrushDepth() + 1);
+		m_kanaPageBrushDepth = m_canvas->getBrushDepth() + 1;
 		break;
 	case KANA_PAGE_BRUSH_SCALEDOWN:
-		m_canvas->setBrushDepth(m_canvas->getBrushDepth() - 1);
+		m_kanaPageBrushDepth = m_canvas->getBrushDepth() + 1;
 		break;
 	}
+	m_canvas->setBrushDepth(m_kanaPageBrushDepth);
 
 	Layer* kanaPageLayer = (Layer*) this->getChildByTag(DICTIONARY_KANA_PAGE_LAYER);
 	Label* brushDepthLabel = (Label*)kanaPageLayer->getChildByTag(KANA_PAGE_BRUSH_DEPTH_HINT);

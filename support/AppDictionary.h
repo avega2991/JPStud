@@ -20,7 +20,7 @@ typedef int ID;
 class AppDictionary
 {
 private:
-	std::vector<std::vector<std::string>>									m_kanaRowsDictionary;
+	std::vector<std::vector<std::string>>									m_kanaRowsDictionary;	// kana rows by it's order (romaji)
 	std::map<ID, Kanji*>													m_kanjiDictionary;
 	std::map<ID, DictionaryWord*>											m_wordsDictionary;
 	std::map<ID, InventoryItem*>											m_itemsDictionary;

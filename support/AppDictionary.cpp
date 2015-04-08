@@ -150,6 +150,11 @@ Kanji*	AppDictionary::getKanjiByID(ID id)
 	return m_kanjiDictionary[id];
 }
 
+DictionaryWord*	AppDictionary::getWordByID(ID id)
+{
+	return m_wordsDictionary[id];
+}
+
 std::vector<Kanji*>	AppDictionary::getKanjiByImage(const cocos2d::Rect& area)
 {
 	std::vector<glAddition::Pixel> pixels = glAddition::readPixels(area);

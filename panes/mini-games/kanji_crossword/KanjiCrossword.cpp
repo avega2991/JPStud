@@ -8,7 +8,6 @@ KanjiCrossword::KanjiCrossword(short wordsNum)
 {
 	m_currentWordsSet = this->generateWordsSet(wordsNum);
 
-
 }
 
 KanjiCrossword*	KanjiCrossword::create(short wordsNum)
@@ -71,17 +70,18 @@ std::set<CrosswordWord*>	KanjiCrossword::generateWordsSet(short wordsNum)
 	return wordsSet;
 }
 
-// FIX
 CrosswordWord*	KanjiCrossword::wordToCrosswordWord(ID wordID)
 {
 	std::string word = m_dictionary->getWordByID(wordID)->getKanjiWriting();
+	std::map<ID, Kanji*> kanjiDict = m_dictionary->getKanjiDictionary();
 	CrosswordWord* cwWord = new CrosswordWord(word.size());
 
 	for (int i = 0; i < word.size(); i++)
 	{
 		Triad<KANJI_ID, RELATED_WORD_INDEX, RELATED_KANJI_INDEX> elem;
-
-		elem.first = word[i];									// FIX : I NEED KANJI ID - NOT KANJI ITSELF
+		Kanji* kanji = m_dictionary->getKanjiBySym(std::to_string(word[i]));
+		
+		elem.first = kanji->getID();
 		elem.second = KANJI_NOT_RELATED;
 		elem.third = KANJI_NOT_RELATED;
 

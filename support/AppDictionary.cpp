@@ -155,6 +155,32 @@ DictionaryWord*	AppDictionary::getWordByID(ID id)
 	return m_wordsDictionary[id];
 }
 
+std::vector<DictionaryWord*>	AppDictionary::getWordsByRomaji(const std::string& romaji)
+{
+	std::vector<DictionaryWord*> result;
+
+	for (std::map<int, DictionaryWord*>::iterator it = m_wordsDictionary.begin(); it != m_wordsDictionary.end(); it++)
+	{
+		if (it->second->getRomajiWriting() == romaji)
+		{
+			result.push_back(it->second);
+		}
+	}
+
+	return result;
+}
+
+Kanji*	AppDictionary::getKanjiBySym(const std::string& kanjiSym)
+{
+	for (std::map<ID, Kanji*>::iterator kanji = m_kanjiDictionary.begin(); kanji != m_kanjiDictionary.end(); kanji++)
+	{
+		if (kanji->second->getSymbol() == kanjiSym)
+			return kanji->second;
+	}
+
+	return nullptr;
+}
+
 std::vector<Kanji*>	AppDictionary::getKanjiByImage(const cocos2d::Rect& area)
 {
 	std::vector<glAddition::Pixel> pixels = glAddition::readPixels(area);
@@ -165,10 +191,16 @@ std::vector<Kanji*>	AppDictionary::getKanjiByImage(const cocos2d::Rect& area)
 	std::map<ID, Kanji*> kanjiDictionary = this->getKanjiDictionary();
 	for (std::map<ID, Kanji*>::iterator it = kanjiDictionary.begin(); it != kanjiDictionary.end(); it++)
 	{
-		std::vector<std::vector<MONOCHROME_COLOR>> monochromeOriginMatrix = 
+		std::vector<std::vector<MONOCHROME_COLOR>> monochromeOriginMatrix =
 			glAddition::loadMonochromeMatrixFromFile("dictionaries/kanji_origins/" + std::to_string(it->first) + ".bin");
 
-		std::vector<std::vector<MONOCHROME_COLOR>> collisionMatrix = 
+		// <TEST_NEW_SEARCH>
+		/* monochromeUserMatrix =
+		math::Matrix::shiftMatrixToCenterOfMass(monochromeUserMatrix,
+		math::Matrix::findCenterOfMass(monochromeOriginMatrix)); */
+		// </TEST_NEW_SEARCH>
+
+		std::vector<std::vector<MONOCHROME_COLOR>> collisionMatrix =
 			math::Matrix::substract(monochromeUserMatrix, monochromeOriginMatrix);
 
 		long collisionCount = 0;
@@ -192,7 +224,7 @@ std::vector<Kanji*>	AppDictionary::getKanjiByImage(const cocos2d::Rect& area)
 
 	// <FIND_RESULT>
 	std::vector<Kanji*> kanjiResult;
-	for (std::map<ID, Kanji*>::iterator it = kanjiDictionary.begin(); 
+	for (std::map<ID, Kanji*>::iterator it = kanjiDictionary.begin();
 		it != kanjiDictionary.end() || kanjiResult.size() >= KANJI_SEARCH_MAX_RESULT; it++)
 	{
 		if (collisionMap[it->first] <= minCollision + KANJI_SEARCH_COLLISION_MAX_ERROR)
@@ -203,21 +235,6 @@ std::vector<Kanji*>	AppDictionary::getKanjiByImage(const cocos2d::Rect& area)
 	// </FIND_RESULT>
 
 	return kanjiResult;
-}
-
-std::vector<DictionaryWord*>	AppDictionary::getWordsByRomaji(const std::string& romaji)
-{
-	std::vector<DictionaryWord*> result;
-
-	for (std::map<int, DictionaryWord*>::iterator it = m_wordsDictionary.begin(); it != m_wordsDictionary.end(); it++)
-	{
-		if (it->second->getRomajiWriting() == romaji)
-		{
-			result.push_back(it->second);
-		}
-	}
-
-	return result;
 }
 
 std::vector<DictionaryWord*>	AppDictionary::getWordsByKana(const std::string& kana)

@@ -5,7 +5,7 @@
 #include <math.h>
 
 
-namespace applib
+namespace AppLib
 {
 	// TODO : REPLACE ALL WITHIN
 }
@@ -15,11 +15,11 @@ namespace geo
 	class Line
 	{
 	public:
-		static double								length(const cocos2d::Point*, const cocos2d::Point*);
+		static double									length(const cocos2d::Point*, const cocos2d::Point*);
 	};
 
-	cocos2d::Rect									getFloorBox(const cocos2d::Rect*);
-	int												getFloorOY(const cocos2d::Rect*);
+	cocos2d::Rect										getFloorBox(const cocos2d::Rect*);
+	int													getFloorOY(const cocos2d::Rect*);
 }
 
 namespace math
@@ -28,6 +28,10 @@ namespace math
 	{
 	public:
 		static std::vector<std::vector<bool>>			substract(std::vector<std::vector<bool>> firstMtx, std::vector<std::vector<bool>> secondMtx);
+
+		static std::vector<std::vector<bool>>			shiftMatrixToCenterOfMass(std::vector<std::vector<bool>> mtx, std::pair<int, int> centerOfMass);
+
+		static std::pair<int, int>						findCenterOfMass(std::vector<std::vector<bool>> firstMtx);
 	};
 }
 

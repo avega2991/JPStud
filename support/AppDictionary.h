@@ -7,7 +7,7 @@
 
 #include "support\Kanji.h"
 #include "support\Word.h"
-#include "sprites\Item.h"
+#include "sprites\items\Item.h"
 #include "support\AppLib.h"
 #include "support\GLAddition.h"
 
@@ -58,6 +58,7 @@ public:
 	InventoryItem*															getItemByID(ID);
 
 	std::vector<Kanji*>														getKanjiByRomaji(const std::string&);
+	Kanji*																	getKanjiBySym(const std::string& kanjiSym);
 	std::vector<Kanji*>														getKanjiByImage(const cocos2d::Rect& area);
 
 	std::vector<DictionaryWord*>											getWordsByRomaji(const std::string&);

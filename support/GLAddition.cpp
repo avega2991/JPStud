@@ -131,6 +131,9 @@ std::vector<std::vector<MONOCHROME_COLOR>>	glAddition::loadMonochromeMatrixFromF
 		std::string inputString;
 		std::getline(inputFile, inputString);
 
+		if (inputString[0] < '0' || inputString[0] > '9')
+			break;
+
 		std::vector<MONOCHROME_COLOR> matrixLine;
 		for (int i = 0; i < inputString.size(); i++)
 		{

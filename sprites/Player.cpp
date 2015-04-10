@@ -68,6 +68,7 @@ Player*	Player::create()
 	return NULL;
 }
 
+// TODO
 void	Player::initStats()
 {
 	// TODO : LOAD STATS FROM FILE

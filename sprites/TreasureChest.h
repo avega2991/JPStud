@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "sprites\Item.h"
+#include "sprites\items\Item.h"
 #include "support\AppLib.h"
 #include "support\ConstValues.h"
 
@@ -16,9 +16,9 @@ class TreasureChest : public cocos2d::Sprite
 private:
 	std::vector<InventoryItem*>								m_items;
 	BYTE													m_state;
-	int														m_keyID; // if NULL then no need any key
+	int														m_keyID;	// if NULL then no need any key
 
-	std::string												m_name;	// filename without _<state>.<extention>
+	std::string												m_name;		// filename without _<state>.<extention>
 
 public:
 	TreasureChest();

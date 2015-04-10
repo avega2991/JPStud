@@ -51,7 +51,7 @@ public:
 	Player();
 
 	static Player*															getInstance();
-	void																	initStats();
+	void																	initStats();		// TODO
 	
 	cocos2d::Vec2															getPrevPosition();
 	cocos2d::EventListenerTouchOneByOne*									getEventListener();

@@ -6,7 +6,7 @@
 #include "panes\interface\MainInterface.h"
 #include "panes\Dialog.h"
 
-#define BIAS		4		//line from the bottom of picture and legs of the player
+#define BIAS				4		//line from the bottom of picture and legs of the player
 
 #define DOWN				1
 #define LEFT				7

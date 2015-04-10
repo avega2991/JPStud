@@ -359,7 +359,7 @@ void	DictionaryInterface::brushScaleButtonCallback(Ref* pSender)
 		m_kanaPageBrushDepth = m_canvas->getBrushDepth() + 1;
 		break;
 	case KANA_PAGE_BRUSH_SCALEDOWN:
-		m_kanaPageBrushDepth = m_canvas->getBrushDepth() + 1;
+		m_kanaPageBrushDepth = m_canvas->getBrushDepth() - 1;
 		break;
 	}
 	m_canvas->setBrushDepth(m_kanaPageBrushDepth);

@@ -15,14 +15,14 @@
 #define DICTIONARY_TAB_LAYER_ORDER								3
 #define DICTIONARY_LABEL_ORDER									4
 #define DICTIONARY_HINT_ORDER									4
-#define DICTIONARY_KANA_PAGE_UNDERLAYER_ORDER					5
-#define DICTIONARY_KANA_PAGE_LAYER_ORDER						6
-#define DICTIONARY_KANA_PAGE_HINT_ORDER							7
+#define DICTIONARY_SHOW_PAGE_UNDERLAYER_ORDER					5
+#define DICTIONARY_SHOW_PAGE_LAYER_ORDER						6
+#define DICTIONARY_SHOW_PAGE_HINT_ORDER							7
 
-#define KANA_PAGE_BACKGROUND_ORDER								1
-#define KANA_PAGE_SPRITE_ORDER									2
-#define KANA_PAGE_HINT_ORDER									3
-#define KANA_PAGE_MENU_LABEL_ORDER								4
+#define SHOW_PAGE_BACKGROUND_ORDER								1
+#define SHOW_PAGE_SPRITE_ORDER									2
+#define SHOW_PAGE_HINT_ORDER									3
+#define SHOW_PAGE_MENU_LABEL_ORDER								4
 
 #define KANJI_TAB_RESULT_LAYER_ORDER							1
 #define KANJI_TAB_SPRITE_BORDER_ORDER							2
@@ -32,22 +32,22 @@
 // LAYER
 #define DICTIONARY_TAB_LAYER									10
 #define DICTIONARY_HINT											11
-#define DICTIONARY_KANA_PAGE_UNDERLAYER							12
-#define DICTIONARY_KANA_PAGE_LAYER								13
-#define DICTIONARY_KANA_PAGE_HINT								14
+#define DICTIONARY_SHOW_PAGE_UNDERLAYER							12
+#define DICTIONARY_SHOW_PAGE_LAYER								13
+#define DICTIONARY_SHOW_PAGE_HINT								14
 
 #define KANJI_TAB_SEARCH_RESULT_LAYER							20
 
-#define KANA_PAGE_BACKGROUND									30
-#define KANA_PAGE_SPRITE										31
-#define KANA_PAGE_HINT											32
-// #define KANA_PAGE_MENU_LABEL									33
-#define KANA_PAGE_OUTLINE										34
-#define KANA_PAGE_BRUSH_SCALEDOWN								35
-#define KANA_PAGE_BRUSH_SCALEUP									36
-#define KANA_PAGE_BRUSH_DEPTH_HINT								37
-#define KANA_PAGE_EXAMPLE										38
+#define SHOW_PAGE_BACKGROUND									30
+#define SHOW_PAGE_SPRITE										31
+#define SHOW_PAGE_HINT											32
+// #define SHOW_PAGE_MENU_LABEL									33
 
+#define KANA_PAGE_EXAMPLE										34
+#define KANA_PAGE_OUTLINE										35
+#define KANA_PAGE_BRUSH_SCALEDOWN								36
+#define KANA_PAGE_BRUSH_SCALEUP									37
+#define KANA_PAGE_BRUSH_DEPTH_HINT								38
 
 // DICTIONARY TABMENU BUTTONS
 #define DB_KANJI												101
@@ -116,6 +116,8 @@ private:
 	void														searchResultButtonCallback(Ref*);
 	// WORDS TAB CALLBACKS
 	void														wordEnterButtonCallback(Ref*);
+	// GRAMMAR TAB CALLBACKS
+	void														grammarItemCallback(Ref*);
 	// KANA TAB CALLBACKS
 	void														kanaRowsCallback(Ref*);
 	void														closeButtonCallback(Ref*);

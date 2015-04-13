@@ -32,6 +32,7 @@ void	AppDictionary::loadAll(const std::string& path)
 	this->loadKanaRows(path + "kana_rows" + s_extention);
 	this->loadKanji(path + "kanji" + s_extention);
 	this->loadWords(path + "words" + s_extention);
+	this->loadGrammar(path + "grammar" + s_extention);
 	this->loadItems(path + "items" + s_extention);
 	this->loadKanaKeyboardTable(path + "kana_keyboard_table" + s_extention);
 }
@@ -81,6 +82,44 @@ void	AppDictionary::loadWords(const std::string& filename)
 	}
 }
 
+void	AppDictionary::loadGrammar(const std::string& filename)
+{
+	std::ifstream	inputFile(filename);
+	std::string		inputString;
+
+	std::vector<std::string> text;
+	int id = 1;
+	while (std::getline(inputFile, inputString))
+	{
+		// <NEXT_GRAMMAR>
+		if (inputString.length() <= 1)
+		{
+			m_grammarDictionary[id] = text;
+			text.clear();
+			id++;
+
+			continue;
+		}
+		// </NEXT_GRAMMAR>
+
+		int doubleDotCount = 0;
+		while (inputString.find_first_of(":") == 0)
+		{
+			doubleDotCount++;
+			inputString = inputString.substr(1, inputString.length() - 1);
+		}
+
+		for (int i = 0; i < doubleDotCount; i++)
+		{
+			inputString =  "    " + inputString;
+		}
+
+		text.push_back(inputString);
+	}
+
+	m_grammarDictionary[id] = text;
+}
+
 void	AppDictionary::loadItems(const std::string& filename)
 {
 	/*std::ifstream	inputFile(filename);
@@ -120,6 +159,7 @@ void	AppDictionary::loadKanaKeyboardTable(const std::string& filename)
 	}
 }
 
+// <GET_DICTIONARY>
 std::vector<std::vector<std::string>>	AppDictionary::getKanaRowsDictionary()
 {
 	return m_kanaRowsDictionary;
@@ -135,6 +175,11 @@ std::map<ID, DictionaryWord*>	AppDictionary::getWordsDictionary()
 	return m_wordsDictionary;
 }
 
+std::map<ID, std::vector<std::string>>	AppDictionary::getGrammarDictionary()
+{
+	return m_grammarDictionary;
+}
+
 std::map<ID, InventoryItem*>	AppDictionary::getItemsDictionary()
 {
 	return m_itemsDictionary;
@@ -144,7 +189,9 @@ std::map<std::string, Triad<std::string, std::string, std::string>>	AppDictionar
 {
 	return m_keyboardDictionary;
 }
+// </GET_DICTIONARY>
 
+// <GET_BY_ID>
 Kanji*	AppDictionary::getKanjiByID(ID id)
 {
 	return m_kanjiDictionary[id];
@@ -154,6 +201,12 @@ DictionaryWord*	AppDictionary::getWordByID(ID id)
 {
 	return m_wordsDictionary[id];
 }
+
+std::vector<std::string>	AppDictionary::getGrammarTextByID(ID id)
+{
+	return m_grammarDictionary[id];
+}
+// </GET_BY_ID>
 
 std::vector<DictionaryWord*>	AppDictionary::getWordsByRomaji(const std::string& romaji)
 {

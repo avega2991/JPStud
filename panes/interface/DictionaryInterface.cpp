@@ -184,7 +184,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 
 	Sprite* kanaPage = Sprite::create("textures/kanapages/background.jpg");
 	kanaPage->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
-	kanaPageLayer->addChild(kanaPage, KANA_PAGE_BACKGROUND_ORDER, KANA_PAGE_BACKGROUND);
+	kanaPageLayer->addChild(kanaPage, SHOW_PAGE_BACKGROUND_ORDER, SHOW_PAGE_BACKGROUND);
 	
 	std::string kanaTypeFolder;
 
@@ -198,13 +198,13 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	auto kanaSpritePosition = Point(kanaPage->getPosition().x - kanaPage->getContentSize().width / 5 + 5,
 		kanaPage->getPosition().y + kanaPage->getContentSize().height / 4);
 	kanaSprite->setPosition(kanaSpritePosition);
-	kanaPageLayer->addChild(kanaSprite, KANA_PAGE_SPRITE_ORDER, KANA_PAGE_SPRITE);
+	kanaPageLayer->addChild(kanaSprite, SHOW_PAGE_SPRITE_ORDER, SHOW_PAGE_SPRITE);
 
 	m_canvas = Canvas::create();
 	m_canvas->setPosition(Vec2(kanaPage->getPosition().x - kanaPage->getContentSize().width / 2 + 20,
 		kanaPage->getPosition().y - kanaPage->getContentSize().height / 2 + 70));
 	m_canvas->setBrushDepth(m_kanaPageBrushDepth);
-	kanaPageLayer->addChild(m_canvas, KANA_PAGE_SPRITE_ORDER);
+	kanaPageLayer->addChild(m_canvas, SHOW_PAGE_SPRITE_ORDER);
 
 	// <KANA_PAGE_MENU>
 	auto clearCanvasButton = MenuItemImage::create("textures/kanapages/menu_button.png",
@@ -243,10 +243,10 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	auto kanaPageMenu = Menu::create(clearCanvasButton, setOutlineButton, 
 		brushScaleUpButton, brushScaleDownButton, closeButton, nullptr);
 	kanaPageMenu->setPosition(Vec2(0, 0));
-	kanaPageLayer->addChild(kanaPageMenu, KANA_PAGE_HINT_ORDER);
+	kanaPageLayer->addChild(kanaPageMenu, SHOW_PAGE_HINT_ORDER);
 	// </KANA_PAGE_MENU>
 
-	// <ANIMATION>
+	// <KANA_SYMBOL_ANIMATION>
 	Vector<SpriteFrame*> kanaSpriteFrames;
 	for (int i = KANA_ANIMATION_MAX_FRAMES; i >= 1; i--)
 	{
@@ -260,7 +260,7 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 	Animation* animation = Animation::createWithSpriteFrames(kanaSpriteFrames, 0.1f);
 	Animate* animate = Animate::create(animation);
 	kanaSprite->runAction(RepeatForever::create(animate));
-	// </ANIMATION>
+	// </KANA_SYMBOL_ANIMATION>
 
 	// <HINTS_AND_LABELS>
 	PopupMenu* hint = PopupMenu::create(visibleSize.width / 2 - 1, 60, 423, 55);
@@ -287,14 +287,14 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 		brushScaleDownButton->getPosition().y + KANA_PAGE_BUTTON_VERTICAL_OFFSET * 2);
 	// </HINTS_AND_LABELS>
 
-	kanaPageLayer->addChild(clearCanvasButtonLabel, KANA_PAGE_MENU_LABEL_ORDER);
-	kanaPageLayer->addChild(setOutlineButtonLabel, KANA_PAGE_MENU_LABEL_ORDER);
-	kanaPageLayer->addChild(keyButtonLabel, KANA_PAGE_HINT_ORDER);
-	kanaPageLayer->addChild(brushDepthPXLabel, KANA_PAGE_HINT_ORDER, KANA_PAGE_BRUSH_DEPTH_HINT);
+	kanaPageLayer->addChild(clearCanvasButtonLabel, SHOW_PAGE_MENU_LABEL_ORDER);
+	kanaPageLayer->addChild(setOutlineButtonLabel, SHOW_PAGE_MENU_LABEL_ORDER);
+	kanaPageLayer->addChild(keyButtonLabel, SHOW_PAGE_HINT_ORDER);
+	kanaPageLayer->addChild(brushDepthPXLabel, SHOW_PAGE_HINT_ORDER, KANA_PAGE_BRUSH_DEPTH_HINT);
 
-	this->addChild(underLayer, DICTIONARY_KANA_PAGE_UNDERLAYER_ORDER, DICTIONARY_KANA_PAGE_UNDERLAYER);
-	this->addChild(kanaPageLayer, DICTIONARY_KANA_PAGE_LAYER_ORDER, DICTIONARY_KANA_PAGE_LAYER);
-	this->addChild(hint, DICTIONARY_KANA_PAGE_HINT_ORDER, DICTIONARY_KANA_PAGE_HINT);
+	this->addChild(underLayer, DICTIONARY_SHOW_PAGE_UNDERLAYER_ORDER, DICTIONARY_SHOW_PAGE_UNDERLAYER);
+	this->addChild(kanaPageLayer, DICTIONARY_SHOW_PAGE_LAYER_ORDER, DICTIONARY_SHOW_PAGE_LAYER);
+	this->addChild(hint, DICTIONARY_SHOW_PAGE_HINT_ORDER, DICTIONARY_SHOW_PAGE_HINT);
 
 	underLayer->setOpacity(0);
 	underLayer->runAction(FadeIn::create(0.5f));
@@ -306,9 +306,9 @@ void	DictionaryInterface::kanaRowsCallback(Ref* pSender)
 
 void	DictionaryInterface::closeButtonCallback(Ref* pSender)
 {
-	Sprite* underLayer = (Sprite*)this->getChildByTag(DICTIONARY_KANA_PAGE_UNDERLAYER);
-	Layer* kanaPageLayer = (Layer*)this->getChildByTag(DICTIONARY_KANA_PAGE_LAYER);
-	PopupMenu* hint = (PopupMenu*)this->getChildByTag(DICTIONARY_KANA_PAGE_HINT);
+	Sprite* underLayer = (Sprite*)this->getChildByTag(DICTIONARY_SHOW_PAGE_UNDERLAYER);
+	Layer* kanaPageLayer = (Layer*)this->getChildByTag(DICTIONARY_SHOW_PAGE_LAYER);
+	PopupMenu* hint = (PopupMenu*)this->getChildByTag(DICTIONARY_SHOW_PAGE_HINT);
 
 	underLayer->runAction(Sequence::create(FadeOut::create(0.5f),
 		CallFunc::create(CC_CALLBACK_0(DictionaryInterface::_underlayerAfterFadeOut, this)), nullptr));
@@ -329,7 +329,7 @@ void	DictionaryInterface::clearCanvasButtonCallback(Ref* pSender)
 
 void	DictionaryInterface::setOutlineButtonCallback(Ref* pSender)
 {
-	Layer* kanaPageLayer = (Layer*) this->getChildByTag(DICTIONARY_KANA_PAGE_LAYER);
+	Layer* kanaPageLayer = (Layer*) this->getChildByTag(DICTIONARY_SHOW_PAGE_LAYER);
 
 	Sprite* kanaOutline = (Sprite*) kanaPageLayer->getChildByTag(KANA_PAGE_OUTLINE);
 	if (kanaOutline != nullptr)
@@ -338,13 +338,13 @@ void	DictionaryInterface::setOutlineButtonCallback(Ref* pSender)
 		return;
 	}
 
-	Sprite* kanaSprite = (Sprite*) kanaPageLayer->getChildByTag(KANA_PAGE_SPRITE);
+	Sprite* kanaSprite = (Sprite*) kanaPageLayer->getChildByTag(SHOW_PAGE_SPRITE);
 	kanaOutline = Sprite::create(m_currentKanaSpriteInitFilename);
 
 	kanaOutline->setPosition(Vec2(m_canvas->getPosition().x + m_canvas->getContentSize().width / 2,
 		m_canvas->getPosition().y + m_canvas->getContentSize().height / 2));
 	kanaOutline->setOpacity(64);
-	kanaPageLayer->addChild(kanaOutline, KANA_PAGE_HINT_ORDER, KANA_PAGE_OUTLINE);
+	kanaPageLayer->addChild(kanaOutline, SHOW_PAGE_HINT_ORDER, KANA_PAGE_OUTLINE);
 }
 
 void	DictionaryInterface::brushScaleButtonCallback(Ref* pSender)
@@ -364,7 +364,7 @@ void	DictionaryInterface::brushScaleButtonCallback(Ref* pSender)
 	}
 	m_canvas->setBrushDepth(m_kanaPageBrushDepth);
 
-	Layer* kanaPageLayer = (Layer*) this->getChildByTag(DICTIONARY_KANA_PAGE_LAYER);
+	Layer* kanaPageLayer = (Layer*) this->getChildByTag(DICTIONARY_SHOW_PAGE_LAYER);
 	Label* brushDepthLabel = (Label*)kanaPageLayer->getChildByTag(KANA_PAGE_BRUSH_DEPTH_HINT);
 
 	brushDepthLabel->setString("Brush depth: " + std::to_string((int)m_canvas->getBrushDepth()));
@@ -377,7 +377,7 @@ void	DictionaryInterface::onEachFrameExampleView(float dt)
 
 	if (millisecondsCounter == 0 || millisecondsCounter % 50 == 0)
 	{
-		auto kanaPageLayer = this->getChildByTag(DICTIONARY_KANA_PAGE_LAYER);
+		auto kanaPageLayer = this->getChildByTag(DICTIONARY_SHOW_PAGE_LAYER);
 		
 		PopupMenu* exampleImage = (PopupMenu*)kanaPageLayer->getChildByTag(KANA_PAGE_EXAMPLE);
 		if (exampleImage != nullptr)
@@ -395,7 +395,7 @@ void	DictionaryInterface::onEachFrameExampleView(float dt)
 
 		if (exampleImage != nullptr)
 		{
-			kanaPageLayer->addChild(exampleImage, KANA_PAGE_HINT_ORDER, KANA_PAGE_EXAMPLE);
+			kanaPageLayer->addChild(exampleImage, SHOW_PAGE_HINT_ORDER, KANA_PAGE_EXAMPLE);
 			exampleImage->enableAutoClose(true);
 
 			exampleNum++;
@@ -529,6 +529,60 @@ void	DictionaryInterface::wordEnterButtonCallback(Ref* pSender)
 
 		y -= 20;
 	}
+}
+
+// GRAMMAR TAB CALLBACKS
+void	DictionaryInterface::grammarItemCallback(Ref* pSender)
+{
+	// TODO
+	ID grammarID = ((MenuItemFont*)pSender)->getTag();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	auto appDictionary = AppDictionary::getInstance();
+
+	Sprite* underLayer = Sprite::create("textures/interface/popup/popupmenu_background.png",
+		Rect(0, 0, visibleSize.width, visibleSize.height));
+	underLayer->setAnchorPoint(Vec2(0, 0));
+	underLayer->setPosition(Vec2(0, 0));
+
+	Layer* grammarPageLayer = Layer::create();
+
+	Sprite* grammarPage = Sprite::create("textures/kanapages/background.jpg");
+	grammarPage->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	grammarPageLayer->addChild(grammarPage, SHOW_PAGE_BACKGROUND_ORDER, SHOW_PAGE_BACKGROUND);
+
+	// <GRAMMAR_TEXT>
+	std::string formattedGrammarText;
+
+	std::vector<std::string> grammarTextVector = appDictionary->getGrammarTextByID(grammarID);
+	for (std::vector<std::string>::iterator line = grammarTextVector.begin();
+		line != grammarTextVector.end(); line++)
+	{
+		formattedGrammarText += *line + '\n';
+	}
+
+	Label* grammarText = Label::create(formattedGrammarText, "Arial", 18);
+	grammarText->setColor(Color3B(0, 0, 0));
+	grammarText->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	grammarPageLayer->addChild(grammarText, SHOW_PAGE_HINT_ORDER);
+	// </GRAMMAR_TEXT>
+
+	// <INIT_MENU>
+	auto closeButton = MenuItemImage::create("textures/kanapages/close_button.png",
+		"textures/kanapages/close_button_selected.png",
+		CC_CALLBACK_1(DictionaryInterface::closeButtonCallback, this));
+	closeButton->setPosition(Vec2(grammarPage->getPosition().x + grammarPage->getContentSize().width / 2 - 2 * closeButton->getContentSize().width / 3,
+		grammarPage->getPosition().y + grammarPage->getContentSize().height / 2 - 2 * closeButton->getContentSize().height / 3));
+
+	auto grammarPageMenu = Menu::create(closeButton, nullptr);
+	grammarPageMenu->setPosition(Vec2(0, 0));
+	grammarPageLayer->addChild(grammarPageMenu, SHOW_PAGE_HINT_ORDER);
+	// </INIT_MENU>
+
+	this->addChild(underLayer, DICTIONARY_SHOW_PAGE_UNDERLAYER_ORDER, DICTIONARY_SHOW_PAGE_UNDERLAYER);
+	this->addChild(grammarPageLayer, DICTIONARY_SHOW_PAGE_LAYER_ORDER, DICTIONARY_SHOW_PAGE_LAYER);
+	
+	underLayer->setOpacity(0);
+	underLayer->runAction(FadeIn::create(0.5f));
 }
 
 // OTHER CALLBACKS
@@ -807,8 +861,24 @@ void	DictionaryInterface::_createWordsTab()
 
 void	DictionaryInterface::_createGrammarTab()
 {
-	// TODO
-	m_tabLayer->addChild(m_canvas, 3);
+	// TODO : PAGINATOR
+	//
+	auto grammarDictionary = AppDictionary::getInstance()->getGrammarDictionary();
+	
+	MenuItemFont::setFontSize(18);
+	cocos2d::Vector<MenuItem*> grammarMenuItems;
+	for (std::map<ID, std::vector<std::string>>::iterator it = grammarDictionary.begin(); it != grammarDictionary.end(); it++)
+	{
+		auto newElem = MenuItemFont::create(it->second[0], CC_CALLBACK_1(DictionaryInterface::grammarItemCallback, this));
+		newElem->setTag(it->first);
+		grammarMenuItems.pushBack(newElem);
+	}
+
+	Menu* grammarSelection = Menu::createWithArray(grammarMenuItems); 
+	grammarSelection->setPosition(Vec2(180, 330));
+	grammarSelection->alignItemsVertically();
+
+	m_tabLayer->addChild(grammarSelection, 1);
 }
 
 void	DictionaryInterface::_createKanaTab()
@@ -878,7 +948,7 @@ void	DictionaryInterface::_createKanaTab()
 
 void	DictionaryInterface::_underlayerAfterFadeOut()
 {
-	Sprite* underLayer = (Sprite*)this->getChildByTag(DICTIONARY_KANA_PAGE_UNDERLAYER);
+	Sprite* underLayer = (Sprite*)this->getChildByTag(DICTIONARY_SHOW_PAGE_UNDERLAYER);
 
 	underLayer->removeFromParentAndCleanup(true);
 }

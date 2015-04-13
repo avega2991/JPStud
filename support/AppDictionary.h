@@ -23,6 +23,7 @@ private:
 	std::vector<std::vector<std::string>>									m_kanaRowsDictionary;	// kana rows by it's order (romaji)
 	std::map<ID, Kanji*>													m_kanjiDictionary;
 	std::map<ID, DictionaryWord*>											m_wordsDictionary;
+	std::map<ID, std::vector<std::string>>									m_grammarDictionary;
 	std::map<ID, InventoryItem*>											m_itemsDictionary;
 	std::map<std::string, Triad<std::string, std::string, std::string>> 	m_keyboardDictionary;	// 'key' -> <hira, kata, romaji>
 
@@ -36,6 +37,7 @@ private:
 	void																	loadKanaRows(const std::string& filename);
 	void																	loadKanji(const std::string& filename);
 	void																	loadWords(const std::string& filename);
+	void																	loadGrammar(const std::string& filename);
 	void																	loadItems(const std::string& filename);
 	void																	loadKanaKeyboardTable(const std::string& filename);
 
@@ -50,12 +52,14 @@ public:
 	std::vector<std::vector<std::string>>									getKanaRowsDictionary();
 	std::map<ID, Kanji*>													getKanjiDictionary();
 	std::map<ID, DictionaryWord*>											getWordsDictionary();
+	std::map<ID, std::vector<std::string>>									getGrammarDictionary();
 	std::map<ID, InventoryItem*>											getItemsDictionary();
 	std::map<std::string, Triad<std::string, std::string, std::string>> 	getKeyboardDictionary();
 	
 	Kanji*																	getKanjiByID(ID);
 	DictionaryWord*															getWordByID(ID);
 	InventoryItem*															getItemByID(ID);
+	std::vector<std::string>												getGrammarTextByID(ID);
 
 	std::vector<Kanji*>														getKanjiByRomaji(const std::string&);
 	Kanji*																	getKanjiBySym(const std::string& kanjiSym);

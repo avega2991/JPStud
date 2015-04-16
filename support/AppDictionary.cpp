@@ -223,6 +223,30 @@ std::vector<DictionaryWord*>	AppDictionary::getWordsByRomaji(const std::string& 
 	return result;
 }
 
+std::vector<Kanji*>	AppDictionary::getKanjiByRomaji(const std::string& romaji)
+{
+	std::vector<Kanji*> result;
+
+	for (std::map<ID, Kanji*>::iterator kanji = m_kanjiDictionary.begin(); kanji != m_kanjiDictionary.end(); kanji++)
+	{
+		std::map<std::string, std::vector<std::string>> kanjiDescription = kanji->second->getDescription();
+		
+		for (std::map<std::string, std::vector<std::string>>::iterator desc = kanjiDescription.begin();
+			desc != kanjiDescription.end(); desc++)
+		{
+			std::string reading = desc->first;
+
+			if (reading.find(romaji) != std::string::npos)
+			{
+				result.push_back(kanji->second);
+				break;
+			}
+		}
+	}
+
+	return result;
+}
+
 Kanji*	AppDictionary::getKanjiBySym(const std::string& kanjiSym)
 {
 	for (std::map<ID, Kanji*>::iterator kanji = m_kanjiDictionary.begin(); kanji != m_kanjiDictionary.end(); kanji++)

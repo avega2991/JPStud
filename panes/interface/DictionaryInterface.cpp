@@ -110,13 +110,14 @@ void	DictionaryInterface::switchCurrentTab(BYTE tabTag)
 
 		// SET DEFAULT KANA TYPE
 		m_currentKanaType = DICTIONARY_KANA_TYPE_HIRAGANA;
+		m_currentKanjiInputType = DICTIONARY_KANJI_INPUT_TYPE_IMAGE;
 		//
 	}
 
 	switch (tabTag)
 	{
 	case DB_KANJI:
-		_createKanjiTab();
+		_createKanjiTabImageSearch();
 		break;
 	case DB_WORDS:
 		_createWordsTab();
@@ -409,10 +410,45 @@ void	DictionaryInterface::onEachFrameExampleView(float dt)
 
 	millisecondsCounter++;
 }
+
 // KANJI TAB CALLBACKS
 void	DictionaryInterface::switchKanjiInputTypeCallback(Ref* pSender)
 {
-	// TODO
+	short prevKanjiInputType = m_currentKanjiInputType;
+	MenuItemImage* senderButton = (MenuItemImage*)pSender;
+	MenuItemImage* prevSender = (MenuItemImage*)senderButton->getParent()->getChildByTag(prevKanjiInputType);
+	int senderTag = senderButton->getTag();
+
+	m_currentKanjiInputType = senderTag;
+	
+	if (m_currentKanjiInputType != prevKanjiInputType)
+	{
+		Layer* searchResultLayer = (Layer*)m_tabLayer->getChildByTag(KANJI_TAB_SEARCH_RESULT_LAYER);
+		if (searchResultLayer != nullptr)
+			searchResultLayer->retain();
+
+		m_tabLayer->removeAllChildrenWithCleanup(true);
+
+		if (searchResultLayer != nullptr)
+		{
+			m_tabLayer->addChild(searchResultLayer, KANJI_TAB_RESULT_LAYER_ORDER, KANJI_TAB_SEARCH_RESULT_LAYER);
+			searchResultLayer->release();
+		}
+	}
+	else
+		return;
+
+	switch (senderTag)
+	{
+	case DICTIONARY_KANJI_INPUT_TYPE_IMAGE:
+		_createKanjiTabImageSearch();
+		break;
+	case DICTIONARY_KANJI_INPUT_TYPE_TEXT:
+		_createKanjiTabTextSearch();
+		break;
+	}
+
+	prevSender = senderButton;
 }
 
 void	DictionaryInterface::kanjiEnterButtonCallback(Ref* pSender)
@@ -624,7 +660,7 @@ void	DictionaryInterface::helpButtonCallback(Ref* pSender)
 // </CALLBACKS>
 
 // <SUBFUNCTIONS>
-void	DictionaryInterface::_createKanjiTab()
+void	DictionaryInterface::_createKanjiTabImageSearch()
 {
 	// <CANVAS>
 	auto dictionaryPageOne = this->getChildByTag(DICTIONARY_PAGE_ONE);
@@ -663,6 +699,8 @@ void	DictionaryInterface::_createKanjiTab()
 	imageTypeButton->setTag(DICTIONARY_KANJI_INPUT_TYPE_IMAGE);
 	textTypeButton->setTag(DICTIONARY_KANJI_INPUT_TYPE_TEXT);
 	helpButton->setTag(DICIONARY_KANJI_HELPER);
+
+	imageTypeButton->selected();
 
 	Menu* kanjiInputMenu = Menu::create(helpButton, enterButton, clearButton, imageTypeButton, textTypeButton, nullptr);
 	auto kanjiInputMenuPosition = Vec2(c_splitLinePosition.x - 10, c_splitLinePosition.y - 50);
@@ -705,6 +743,84 @@ void	DictionaryInterface::_createKanjiTab()
 	m_tabLayer->addChild(lClearButton, 3);
 }
 
+void	DictionaryInterface::_createKanjiTabTextSearch()
+{
+	// <TEXTFIELD>
+	auto textField = ui::TextField::create("Enter the word here...", "Arial", 20);
+
+	textField->setPosition(c_splitLinePosition);
+	textField->setMaxLength(c_stringMaxLength);
+	textField->setMaxLengthEnabled(true);
+	textField->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type){
+		CCLOG("Editing a TextField...");
+	});
+
+	m_tabLayer->addChild(textField, 1, DICTIONARY_TEXTFIELD);
+	// </TEXTFIELD>
+
+	// <MENU>
+	auto imageTypeButton = MenuItemImage::create("textures/interface/dictionary/side_button.png",
+		"textures/interface/dictionary/side_button_selected.png",
+		CC_CALLBACK_1(DictionaryInterface::switchKanjiInputTypeCallback, this));
+	auto textTypeButton = MenuItemImage::create("textures/interface/dictionary/side_button.png",
+		"textures/interface/dictionary/side_button_selected.png",
+		CC_CALLBACK_1(DictionaryInterface::switchKanjiInputTypeCallback, this));
+
+	auto helpButton = MenuItemImage::create("textures/interface/dictionary/button.png",
+		"textures/interface/dictionary/button_selected.png",
+		CC_CALLBACK_1(DictionaryInterface::helpButtonCallback, this));
+	auto enterButton = MenuItemImage::create("textures/interface/dictionary/button.png",
+		"textures/interface/dictionary/button_selected.png",
+		CC_CALLBACK_1(DictionaryInterface::kanjiEnterButtonCallback, this));
+	
+	imageTypeButton->setPosition(Vec2(135, 225));
+	textTypeButton->setPosition(Vec2(135, 105));
+
+	helpButton->setPosition(Vec2(-60, 0));
+	enterButton->setPosition(Vec2(50, 0));
+
+	imageTypeButton->setTag(DICTIONARY_KANJI_INPUT_TYPE_IMAGE);
+	textTypeButton->setTag(DICTIONARY_KANJI_INPUT_TYPE_TEXT);
+	helpButton->setTag(DICIONARY_KANJI_HELPER);
+
+	textTypeButton->selected();
+
+	Menu* kanjiInputMenu = Menu::create(helpButton, enterButton, imageTypeButton, textTypeButton, nullptr);
+	auto kanjiInputMenuPosition = Vec2(c_splitLinePosition.x - 10, c_splitLinePosition.y - 50);
+	kanjiInputMenu->setPosition(kanjiInputMenuPosition);
+
+	auto lImageTypeButton = Label::create("Image", "fonts/Xerox Serif Wide.ttf", 18, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+	auto lTextTypeButton = Label::create("Text", "fonts/Xerox Serif Wide.ttf", 18, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+
+	auto lHelpButton = Label::create("Help me!", "fonts/Xerox Serif Wide.ttf", 18, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+	auto lEnterButton = Label::create("Search", "fonts/Xerox Serif Wide.ttf", 18, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+	
+	lImageTypeButton->setPosition(Vec2(kanjiInputMenuPosition.x + imageTypeButton->getPosition().x,
+		kanjiInputMenuPosition.y + imageTypeButton->getPosition().y));
+	lTextTypeButton->setPosition(Vec2(kanjiInputMenuPosition.x + textTypeButton->getPosition().x,
+		kanjiInputMenuPosition.y + textTypeButton->getPosition().y));
+	lImageTypeButton->setRotation(90.0f);
+	lTextTypeButton->setRotation(90.0f);
+
+	lHelpButton->setPosition(Vec2(kanjiInputMenuPosition.x + helpButton->getPosition().x,
+		kanjiInputMenuPosition.y + helpButton->getPosition().y));
+	lEnterButton->setPosition(Vec2(kanjiInputMenuPosition.x + enterButton->getPosition().x,
+		kanjiInputMenuPosition.y + enterButton->getPosition().y));
+	
+	auto lInputType = Label::create("Input type:", "fonts/Xerox Serif Wide.ttf", 20, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+	lInputType->setTextColor(Color4B(0, 0, 0, 255));
+	lInputType->setPosition(Vec2(c_splitLinePosition.x + 85, c_splitLinePosition.y + 125));
+	lInputType->setRotation(-90.0f);
+	// </MENU>
+
+	m_tabLayer->addChild(kanjiInputMenu, 2);
+	m_tabLayer->addChild(lInputType, 3);
+	m_tabLayer->addChild(lImageTypeButton, 3);
+	m_tabLayer->addChild(lTextTypeButton, 3);
+	m_tabLayer->addChild(lHelpButton, 3);
+	m_tabLayer->addChild(lEnterButton, 3);
+}
+
 void	DictionaryInterface::_createKanjiResults()
 {
 	// <CLEAR_OLD_INFO>
@@ -720,13 +836,23 @@ void	DictionaryInterface::_createKanjiResults()
 	// </CLEAR_OLD_INFO>
 
 	// <FIND_KANJI>
-	Vec2 canvasPosition = m_canvas->getPosition();
-	Size canvasSize = m_canvas->getContentSize();
-	Rect canvasBoundingBox = Rect(canvasPosition.x, canvasPosition.y,
-		canvasSize.width, canvasSize.height);
+	AppDictionary* dict = AppDictionary::getInstance();
+	std::vector<Kanji*> searchResult;
+	if (m_currentKanjiInputType == DICTIONARY_KANJI_INPUT_TYPE_IMAGE)
+	{
+		Vec2 canvasPosition = m_canvas->getPosition();
+		Size canvasSize = m_canvas->getContentSize();
+		Rect canvasBoundingBox = Rect(canvasPosition.x, canvasPosition.y,
+			canvasSize.width, canvasSize.height);
 
-	glAddition::captureRectToTGA(canvasBoundingBox, "to_analyze.tga");
-	std::vector<Kanji*> searchResult = AppDictionary::getInstance()->getKanjiByImage(canvasBoundingBox);
+		glAddition::captureRectToTGA(canvasBoundingBox, "to_analyze.tga");
+		searchResult = dict->getKanjiByImage(canvasBoundingBox);
+	}
+	else
+	{
+		auto textField = (ui::TextField*)m_tabLayer->getChildByTag(DICTIONARY_TEXTFIELD);
+		searchResult = dict->getKanjiByRomaji(textField->getString());
+	}
 	// </FIND_KANJI>
 
 	// <LAYOUT>
@@ -772,6 +898,9 @@ void	DictionaryInterface::_createKanjiResults()
 			verticalOffset -= kanjiSize.width + 10;
 			horizontalOffset = 0;
 		}
+
+		if (searchResultLayer->getChildrenCount() >= KANJI_SEARCH_MAX_RESULT)
+			break;
 	}
 
 	Menu* searchResultMenu = Menu::createWithArray(buttonVector);

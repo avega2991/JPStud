@@ -169,13 +169,13 @@ std::vector<std::vector<MONOCHROME_COLOR>>	glAddition::pixelsToMonochromeMatrix(
 
 	// <PIXELMATRIX_TO_MONOCHROME_MATRIX>
 	std::vector<std::vector<MONOCHROME_COLOR>> monochromeMatrix;
-	for (std::vector<std::vector<Pixel>>::iterator it_mtx = pixelsMatrix.begin(); it_mtx != pixelsMatrix.end(); it_mtx++)
+	/*for (std::vector<std::vector<Pixel>>::iterator it_mtx = pixelsMatrix.begin(); it_mtx != pixelsMatrix.end(); it_mtx++)
 	{
 		for (std::vector<Pixel>::iterator it_line = it_mtx->begin(); it_line != it_mtx->end(); it_line++)
 		{
 
 		}
-	}
+	}*/
 
 	int sectorSize = imageWidthAndHeight / sectorCountInLine;
 	for (int i = 0; i < sectorCountInLine; i++)

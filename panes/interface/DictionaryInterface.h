@@ -93,7 +93,7 @@ private:
 	Canvas*														m_canvas;
 	short														m_currentTab;
 
-	short														m_currentKanaType;
+	short														m_currentKanaType;			// both INPUT TYPE and KANA PAGE TYPE
 	short														m_currentKanjiInputType;
 
 	// WORDS TAB
@@ -133,7 +133,8 @@ private:
 	void														onEachFrameWordTab(float);
 	
 	// <SUBFUNCTIONS>
-	void														_createKanjiTab();
+	void														_createKanjiTabImageSearch();
+	void														_createKanjiTabTextSearch();
 	void														_createKanjiResults();
 	void														_createWordsTab();
 	void														_createGrammarTab();
